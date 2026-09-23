@@ -126,6 +126,72 @@ class Dataset:
         }
         return pd.DataFrame.from_dict(data, orient="index", columns=self.features)
 
+    def dropna(self) -> 'Dataset':
+        """
+        Removes all samples containing at least one null value (NaN) in X.
+        Updates y by removing the entries associated with the removed samples.
+
+        Returns
+        -------
+        self: Dataset
+            The modified Dataset object.
+        """
+        mask = ~np.isnan(self.X).any(axis=1)
+        self.X = self.X[mask]
+        if self.y is not None:
+            self.y = self.y[mask]
+        return self
+
+    def fillna(self, value: Union[float, str]) -> 'Dataset':
+        """
+        Replaces all null values (NaN) in X with another value, or with the mean
+        or median of the respective feature.
+
+        Parameters
+        ----------
+        value: float or str
+            The value to use to fill the null values. Can be a float, or the strings
+            "mean" or "median" to use, respectively, the mean or median of each feature.
+
+        Returns
+        -------
+        self: Dataset
+            The modified Dataset object.
+        """
+        if value == "mean":
+            fill_values = self.get_mean()
+        elif value == "median":
+            fill_values = self.get_median()
+        elif isinstance(value, (int, float)):
+            fill_values = np.full(self.X.shape[1], value)
+        else:
+            raise ValueError('value must be a float, "mean" or "median"')
+
+        nan_mask = np.isnan(self.X)
+        col_idxs = np.where(nan_mask)[1]
+        self.X[nan_mask] = fill_values[col_idxs]
+        return self
+
+    def remove_by_index(self, index: int) -> 'Dataset':
+        """
+        Removes a sample from the dataset by its index.
+        Updates y by removing the entry associated with the removed sample.
+
+        Parameters
+        ----------
+        index: int
+            Integer corresponding to the sample to remove.
+
+        Returns
+        -------
+        self: Dataset
+            The modified Dataset object.
+        """
+        self.X = np.delete(self.X, index, axis=0)
+        if self.y is not None:
+            self.y = np.delete(self.y, index, axis=0)
+        return self
+
     @classmethod
     def from_dataframe(cls, df: pd.DataFrame, label: str = None):
         """

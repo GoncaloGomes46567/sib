@@ -30,7 +30,7 @@ class Model(Estimator, ABC):
         predictions: np.ndarray
             The predicted target values.
         """
-        if not self.is_fitted:
+        if not self.is_fitted():
             raise ValueError('Model needs to be fitted before calling predict()')
         return self._predict(dataset)
 
@@ -68,3 +68,41 @@ class Model(Estimator, ABC):
         """
         self.fit(dataset)
         return self.predict(dataset)
+
+    @abstractmethod
+    def _score(self, dataset: 'Dataset') -> float:
+        """
+        Calculate the error between the estimated values and the actual values (dataset.y).
+        Abstract method that needs to be implemented by all subclasses.
+        Typically implemented by getting the predictions (via _predict) and then
+        comparing them to dataset.y using the appropriate error metric.
+
+        Parameters
+        ----------
+        dataset: Dataset
+            The dataset to evaluate the model on.
+
+        Returns
+        -------
+        score: float
+            The error/score metric.
+        """
+
+    def score(self, dataset) -> float:
+        """
+        Verifies whether the model is fitted and, if so, calls _score to compute
+        the error/score metric on the given dataset.
+
+        Parameters
+        ----------
+        dataset: Dataset
+            The dataset to evaluate the model on.
+
+        Returns
+        -------
+        score: float
+            The error/score metric.
+        """
+        if not self.is_fitted():
+            raise ValueError('Model needs to be fitted before calling score()')
+        return self._score(dataset)
