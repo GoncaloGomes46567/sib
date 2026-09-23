@@ -4,27 +4,6 @@ from si.data.dataset import Dataset
 
 
 def read_csv(filename: str, sep: str = ",", features: bool = False, label: bool = False) -> Dataset:
-    """
-    Reads a csv file and returns a Dataset object.
-    The file is always assumed to have a header row (with column names); the
-    'features' argument controls whether those names are used as the dataset's
-    feature names or discarded (using generic names instead).
-
-    Parameters
-    ----------
-    filename: str
-        Name/path of the file
-    sep: str
-        The value separator
-    features: bool
-        Whether to use the file's header row as feature names
-    label: bool
-        Whether the file has y (assumed to be the last column)
-
-    Returns
-    -------
-    Dataset
-    """
     df = pd.read_csv(filename, sep=sep, header=0)
 
     if label:
@@ -42,24 +21,6 @@ def read_csv(filename: str, sep: str = ",", features: bool = False, label: bool 
 
 
 def write_csv(filename: str, dataset: Dataset, sep: str = ",", features: bool = False, label: bool = False) -> None:
-    """
-    Writes a Dataset object to a csv file. A header row is always written so
-    that the file can be read back with read_csv.
-
-    Parameters
-    ----------
-    filename: str
-        Name/path of the file
-    dataset: Dataset
-        Dataset object to write to the file
-    sep: str
-        The value separator
-    features: bool
-        Whether to use the dataset's actual feature names in the header
-        (otherwise generic names are used)
-    label: bool
-        Whether to write y
-    """
     if features and dataset.features is not None:
         columns = list(dataset.features)
     else:
