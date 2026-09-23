@@ -6,20 +6,7 @@ import pandas as pd
 
 class Dataset:
     def __init__(self, X: np.ndarray, y: np.ndarray = None, features: Sequence[str] = None, label: str = None) -> None:
-        """
-        Dataset represents a tabular dataset for single output classification.
-
-        Parameters
-        ----------
-        X: numpy.ndarray (n_samples, n_features)
-            The feature matrix
-        y: numpy.ndarray (n_samples, 1)
-            The label vector
-        features: list of str (n_features)
-            The feature names
-        label: str (1)
-            The label name
-        """
+     
         if X is None:
             raise ValueError("X cannot be None")
         if y is not None and len(X) != len(y):
@@ -36,87 +23,36 @@ class Dataset:
         self.label = label
 
     def shape(self) -> Tuple[int, int]:
-        """
-        Returns the shape of the dataset
-        Returns
-        -------
-        tuple (n_samples, n_features)
-        """
+      
         return self.X.shape
 
     def has_label(self) -> bool:
-        """
-        Returns True if the dataset has a label
-        Returns
-        -------
-        bool
-        """
+     
         return self.y is not None
 
     def get_classes(self) -> np.ndarray:
-        """
-        Returns the unique classes in the dataset
-        Returns
-        -------
-        numpy.ndarray (n_classes)
-        """
+     
         if self.has_label():
             return np.unique(self.y)
         else:
             raise ValueError("Dataset does not have a label")
 
     def get_mean(self) -> np.ndarray:
-        """
-        Returns the mean of each feature
-        Returns
-        -------
-        numpy.ndarray (n_features)
-        """
         return np.nanmean(self.X, axis=0)
 
     def get_variance(self) -> np.ndarray:
-        """
-        Returns the variance of each feature
-        Returns
-        -------
-        numpy.ndarray (n_features)
-        """
         return np.nanvar(self.X, axis=0)
 
     def get_median(self) -> np.ndarray:
-        """
-        Returns the median of each feature
-        Returns
-        -------
-        numpy.ndarray (n_features)
-        """
         return np.nanmedian(self.X, axis=0)
 
     def get_min(self) -> np.ndarray:
-        """
-        Returns the minimum of each feature
-        Returns
-        -------
-        numpy.ndarray (n_features)
-        """
         return np.nanmin(self.X, axis=0)
 
     def get_max(self) -> np.ndarray:
-        """
-        Returns the maximum of each feature
-        Returns
-        -------
-        numpy.ndarray (n_features)
-        """
         return np.nanmax(self.X, axis=0)
 
     def summary(self) -> pd.DataFrame:
-        """
-        Returns a summary of the dataset
-        Returns
-        -------
-        pandas.DataFrame (n_features, 5)
-        """
         data = {
             "mean": self.get_mean(),
             "median": self.get_median(),
@@ -127,15 +63,6 @@ class Dataset:
         return pd.DataFrame.from_dict(data, orient="index", columns=self.features)
 
     def dropna(self) -> 'Dataset':
-        """
-        Removes all samples containing at least one null value (NaN) in X.
-        Updates y by removing the entries associated with the removed samples.
-
-        Returns
-        -------
-        self: Dataset
-            The modified Dataset object.
-        """
         mask = ~np.isnan(self.X).any(axis=1)
         self.X = self.X[mask]
         if self.y is not None:
@@ -143,21 +70,6 @@ class Dataset:
         return self
 
     def fillna(self, value: Union[float, str]) -> 'Dataset':
-        """
-        Replaces all null values (NaN) in X with another value, or with the mean
-        or median of the respective feature.
-
-        Parameters
-        ----------
-        value: float or str
-            The value to use to fill the null values. Can be a float, or the strings
-            "mean" or "median" to use, respectively, the mean or median of each feature.
-
-        Returns
-        -------
-        self: Dataset
-            The modified Dataset object.
-        """
         if value == "mean":
             fill_values = self.get_mean()
         elif value == "median":
@@ -173,20 +85,6 @@ class Dataset:
         return self
 
     def remove_by_index(self, index: int) -> 'Dataset':
-        """
-        Removes a sample from the dataset by its index.
-        Updates y by removing the entry associated with the removed sample.
-
-        Parameters
-        ----------
-        index: int
-            Integer corresponding to the sample to remove.
-
-        Returns
-        -------
-        self: Dataset
-            The modified Dataset object.
-        """
         self.X = np.delete(self.X, index, axis=0)
         if self.y is not None:
             self.y = np.delete(self.y, index, axis=0)
@@ -194,20 +92,6 @@ class Dataset:
 
     @classmethod
     def from_dataframe(cls, df: pd.DataFrame, label: str = None):
-        """
-        Creates a Dataset object from a pandas DataFrame
-
-        Parameters
-        ----------
-        df: pandas.DataFrame
-            The DataFrame
-        label: str
-            The label name
-
-        Returns
-        -------
-        Dataset
-        """
         if label:
             X = df.drop(label, axis=1).to_numpy()
             y = df[label].to_numpy()
@@ -219,13 +103,6 @@ class Dataset:
         return cls(X, y, features=features, label=label)
 
     def to_dataframe(self) -> pd.DataFrame:
-        """
-        Converts the dataset to a pandas DataFrame
-
-        Returns
-        -------
-        pandas.DataFrame
-        """
         if self.y is None:
             return pd.DataFrame(self.X, columns=self.features)
         else:
@@ -240,26 +117,6 @@ class Dataset:
                     n_classes: int = 2,
                     features: Sequence[str] = None,
                     label: str = None):
-        """
-        Creates a Dataset object from random data
-
-        Parameters
-        ----------
-        n_samples: int
-            The number of samples
-        n_features: int
-            The number of features
-        n_classes: int
-            The number of classes
-        features: list of str
-            The feature names
-        label: str
-            The label name
-
-        Returns
-        -------
-        Dataset
-        """
         X = np.random.rand(n_samples, n_features)
         y = np.random.randint(0, n_classes, n_samples)
         return cls(X, y, features=features, label=label)
