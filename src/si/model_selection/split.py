@@ -6,23 +6,7 @@ from si.data.dataset import Dataset
 
 
 def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state: int = None) -> Tuple[Dataset, Dataset]:
-    """
-    Splits a Dataset object into training and testing Dataset objects.
 
-    Parameters
-    ----------
-    dataset: Dataset
-        The Dataset object to split into training and testing data
-    test_size: float
-        The size of the testing Dataset (e.g., 0.2 for 20%)
-    random_state: int
-        Seed for generating permutations
-
-    Returns
-    -------
-    train, test: Tuple[Dataset, Dataset]
-        A tuple containing the train and test Dataset objects.
-    """
     if random_state is not None:
         np.random.seed(random_state)
 
@@ -44,24 +28,7 @@ def train_test_split(dataset: Dataset, test_size: float = 0.2, random_state: int
 
 def stratified_train_test_split(dataset: Dataset, test_size: float = 0.2,
                                  random_state: int = None) -> Tuple[Dataset, Dataset]:
-    """
-    Splits a Dataset object into stratified training and testing Dataset objects,
-    keeping (approximately) the same class proportions in both sets.
-
-    Parameters
-    ----------
-    dataset: Dataset
-        The Dataset object to split into training and testing data
-    test_size: float
-        The size of the testing Dataset (e.g., 0.2 for 20%)
-    random_state: int
-        Seed for generating permutations
-
-    Returns
-    -------
-    train, test: Tuple[Dataset, Dataset]
-        A tuple containing the stratified train and test Dataset objects.
-    """
+ 
     if random_state is not None:
         np.random.seed(random_state)
 
